@@ -528,10 +528,11 @@ func (n *Manager) sendAll(alerts ...*Alert) bool {
 					n.metrics.errors.WithLabelValues(url).Inc()
 				} else {
 					numSuccess.Inc()
+					level.Info(n.logger).Log("alertmanager", url, "count", len(alerts), "msg", "send alert success!")
+					level.Info(n.logger).Log("alertmanager", url, "content", string(payload))
 				}
 				n.metrics.latency.WithLabelValues(url).Observe(time.Since(begin).Seconds())
 				n.metrics.sent.WithLabelValues(url).Add(float64(len(alerts)))
-
 				wg.Done()
 			}(ams.client, am.url().String())
 		}
